@@ -1,0 +1,120 @@
+/*** parte das datas **/
+/* ---------- TEMAS ---------- */
+
+body.modoescuro {
+    background: #181920;
+    color: #fff;
+}
+
+body.modoclaro {
+    background: #e9e9e9;
+    color: #222;
+}
+
+.dashboard {
+    max-width: 800px;
+    margin: 40px auto;
+    background: var(--card);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px #0005;
+}
+
+:root {
+    --card-dark: #242733;
+    --card-light: #ffffff;
+}
+
+body.dark .dashboard {
+    background: var(--card-dark);
+}
+
+body.light .dashboard {
+    background: var(--card-light);
+}
+
+/* ---------- HEADER ---------- */
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.theme-toggle {
+    padding: 8px 12px;
+    cursor: pointer;
+    border: none;
+    background: #007bff;
+    color: white;
+    border-radius: 6px;
+}
+
+/* ---------- SEARCH ---------- */
+
+.search-area {
+    margin-top: 15px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.search-area input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+}
+
+.search-area button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    background: #007bff;
+    color: white;
+}
+
+.geo-btn {
+    background: #28a745 !important;
+}
+
+/* ---------- WEATHER ---------- */
+
+.current-weather {
+    background: #2d303d;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+body.light .current-weather {
+    background: #dfe3ea;
+}
+
+.days-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.day-card {
+    background: #2d303d;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+body.light .day-card {
+    background: #dfe3ea;
+}
+
+/* ---------- MAPA ---------- */
+
+.map {
+    height: 300px;
+    width: 100%;
+    margin-bottom: 25px;
+    border-radius: 10px;
+    overflow: hidden;
+}

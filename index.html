@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Clima</title>
+
+     <!-- Link de APP do CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <!-- Link Chart.js (Gráficos) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!--Link JavaScript-->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<!-- Configuração de Mudança de Cores da Página -->
+<body class="modoescuro">
+<!-- Titulo da Página -->    
+<div class="dashboard">
+
+    <div class="header">
+        <h1>🌦️ Dashboard do Clima 🌤️</h1>
+        <button class="theme-toggle" onclick="trocarTema()">🌙 Mudar Tema</button>
+    </div>
+
+    <div class="search-area">
+        <input type="text" id="cityInput" placeholder="Digite uma cidade...🏙️">
+        <button onclick="buscarClima()">Buscar</button>
+        <button class="geo-btn" onclick="buscarPorLocalizacao()">Localização</button>
+    </div>
+
+    <div id="weatherResult" class="weather-container"></div>
+
+    <h3>Mapa 🗺️</h3>
+    <div id="map" class="map"></div>
+
+    <h3> Gráfico de Temperatura (Próximos 5 dias) 🌡️</h3>
+    <canvas id="tempChart"></canvas>
+
+</div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script src="script.js"></script>
+</body>
+</html>
