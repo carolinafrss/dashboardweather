@@ -17,3 +17,13 @@ Objetivo
 6. Adicionar gráficos para visualizar a oscilação de temperatura e umidade da previsão de 5 dias.
 7. Ter opções da troca de tema(dark e light).
 8. Garanta um layout responsivo para celular e desktop.
+
+
+Interligação das APIs
+Open-Meteo (Principal): Utilizada para buscar o Clima Atual (Requisito 1), a Previsão de 5 Dias (Requisito 2), e os dados horários para os Gráficos (Requisito 5).
+
+Open-Meteo Geocoding: Utilizada na função fetchCoordinates(cityName) para traduzir o nome da cidade em coordenadas (Latitude/Longitude), que são então usadas pela API principal (Requisito 3).
+
+API de Geolocalização do Navegador: Usada na função fetchWeatherByGeolocation() para obter as coordenadas do usuário (Requisito 4).
+
+Open-Meteo (Fases da Lua/Sol): Utilizada para obter a fase lunar e o nascer do sol/pôr do sol (Requisito 9).
