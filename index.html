@@ -1,46 +1,165 @@
+<!-- Desenvolver uma pagina que possua um Dashboard de Previsão do Tempo funcional, com os seguintes requisitos:
+
+1. Exibir o clima atual para uma cidade.
+2. Exibir a previsão do tempo para os próximos 5 dias.
+3. Permitir a busca da previsão por nome da cidade.
+4. Permitir a busca da previsão usando a geolocalização do usuário.
+5. Adicionar gráficos para visualizar a oscilação de temperatura e umidade da previsão de 5 dias.
+6. Ter opções da troca de tema da página (dark e light).
+7. Garanta um layout responsivo para celular e desktop.
+Extra:
+a) Adicionado um botão para que mude a cor da pagina com as cores de acordo com a estação no momento do ano e mostrando a temperatura atual da cidade.
+b) Adicionado um calendario com as fases do Sol e as fases da Lua.
+
+Exemplo de APIs que podem ser usadas:
+https://public-web.meteosource.com/weather-api-porto-alegre
+https://open-meteo.com/
+https://openweathermap.org/api
+
+-->
+
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Clima</title>
-
-     <!-- Link de APP do CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <!-- Link Chart.js (Gráficos) -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!--Link JavaScript-->
+    <title>Dashboard de Previsão do Tempo</title>
     <link rel="stylesheet" href="styles.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    transitionProperty: {
+                        'colors': 'color, background-color, border-color, text-decoration-color, fill, stroke',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
-<!-- Configuração de Mudança de Cores da Página -->
-<body class="modoescuro">
-<!-- Titulo da Página -->    
-<div class="dashboard">
 
-    <div class="header">
-        <h1>🌦️ Dashboard do Clima 🌤️</h1>
-        <button class="theme-toggle" onclick="trocarTema()">🌙 Mudar Tema</button>
-    </div>
+<body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-500 min-h-screen">
+    <header class="shadow-lg bg-white dark:bg-gray-800 transition-colors duration-500">
+        <div class="container mx-auto p-4 flex justify-between items-center flex-wrap">
+            <h1 class="text-3xl font-extrabold text-blue-600 dark:text-blue-400">
+                <i class="fa-solid fa-cloud-sun mr-2 animate-bounce-slow"></i>Dashboard de Previsão
+            </h1>
+            <button id="season-btn" onclick="toggleSeasonalTheme()" class="mt-2 sm:mt-0 p-3 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-lg font-semibold hover:from-green-500 hover:to-blue-600 transition duration-300 shadow-md transform hover:scale-105">
+                <i class="fa-solid fa-wand-magic-sparkles mr-2"></i>Modo Estação
+            </button>
+        </div>
+    </header>
 
-    <div class="search-area">
-        <input type="text" id="cityInput" placeholder="Digite uma cidade...🏙️">
-        <button onclick="buscarClima()">Buscar</button>
-        <button class="geo-btn" onclick="buscarPorLocalizacao()">Localização</button>
-    </div>
+    <main class="container mx-auto p-4 grid gap-6 md:grid-cols-3 lg:grid-cols-4 pt-8">
 
-    <div id="weatherResult" class="weather-container"></div>
+        <section id="current-weather" class="glass-panel p-6 shadow-2xl rounded-xl md:col-span-3 lg:col-span-2">
+            <h2 class="text-2xl font-bold mb-4 flex items-center text-gray-800 dark:text-gray-100">
+                <i class="fa-solid fa-location-dot mr-2"></i>Clima Atual
+            </h2>
+            <div id="current-weather-data" class="min-h-[150px] flex items-center justify-center">
+                <div class="text-center text-gray-500 dark:text-gray-400">
+                    <i class="fa-solid fa-spinner fa-spin-pulse fa-2x"></i>
+                    <p class="mt-2">Carregando dados...</p>
+                </div>
+            </div>
+        </section>
 
-    <h3>Mapa 🗺️</h3>
-    <div id="map" class="map"></div>
+        <section id="search-geo" class="glass-panel p-6 shadow-2xl rounded-xl md:col-span-3 lg:col-span-2">
+            <h2 class="text-2xl font-bold mb-4 flex items-center text-gray-800 dark:text-gray-100">
+                <i class="fa-solid fa-magnifying-glass mr-2"></i>Buscar Previsão
+            </h2>
+            
+            <div id="search" class="mb-4">
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input type="text" id="city-input" placeholder="Digite o nome da cidade" 
+                        class="flex-grow p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-300 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400">
+                    <button id="search-button" 
+                        class="p-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition duration-300 shadow-md">
+                        <i class="fa-solid fa-search mr-1"></i>Buscar
+                    </button>
+                </div>
+            </div>
 
-    <h3> Gráfico de Temperatura (Próximos 5 dias) 🌡️</h3>
-    <canvas id="tempChart"></canvas>
+            <hr class="border-gray-300 dark:border-gray-600 my-4">
 
-</div>
+            <div id="geolocation">
+                <h3 class="text-xl font-semibold mb-3 flex items-center text-gray-800 dark:text-gray-100">
+                    <i class="fa-solid fa-location-crosshairs mr-2"></i>Usar Geolocalização
+                </h3>
+                <button id="geo-button" 
+                    class="w-full p-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition duration-300 shadow-md">
+                    Obter Previsão pela Localização
+                </button>
+            </div>
+        </section>
 
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+        <section id="forecast" class="glass-panel p-6 shadow-2xl rounded-xl md:col-span-3 lg:col-span-4">
+            <h2 class="text-2xl font-bold mb-4 flex items-center text-gray-800 dark:text-gray-100">
+                <i class="fa-solid fa-calendar-day mr-2"></i>Previsão para os Próximos 5 Dias
+            </h2>
+            <div id="forecast-data" class="grid grid-cols-2 md:grid-cols-5 gap-4 min-h-[120px]">
+                </div>
+        </section>
 
-<script src="script.js"></script>
+        <section id="charts" class="glass-panel p-6 shadow-2xl rounded-xl md:col-span-3 lg:col-span-2">
+            <h2 class="text-2xl font-bold mb-4 flex items-center justify-between text-gray-800 dark:text-gray-100">
+                <span><i class="fa-solid fa-chart-line mr-2"></i>Gráfico de Oscilação</span>
+                <button id="toggle-chart-mode" 
+                    class="p-2 text-sm bg-purple-500 text-white rounded-lg font-semibold hover:bg-purple-600 transition duration-300 shadow-md">
+                    <i class="fa-solid fa-chart-bar mr-1"></i>Alternar para Umidade
+                </button>
+            </h2>
+            <div class="h-64">
+                <canvas id="weather-chart"></canvas>
+            </div>
+        </section>
+        
+        <section id="options" class="glass-panel p-6 shadow-2xl rounded-xl md:col-span-3 lg:col-span-2 flex flex-col">
+            
+            <div id="theme-toggle" class="mb-6">
+                <h3 class="text-xl font-semibold mb-3 flex items-center text-gray-800 dark:text-gray-100">
+                    <i class="fa-solid fa-palette mr-2"></i>Opções de Tema
+                </h3>
+                <button id="toggle-theme" 
+                    class="w-full p-3 bg-gray-600 text-white rounded-lg font-semibold hover:bg-gray-700 transition duration-300 shadow-md">
+                    <i class="fa-solid fa-moon mr-1"></i>Alternar para Tema Escuro
+                </button>
+            </div>
+
+            <hr class="border-gray-300 dark:border-gray-600 my-4">
+
+            <div id="calendar" class="flex-grow">
+                <h3 class="text-xl font-semibold mb-3 flex items-center text-gray-800 dark:text-gray-100">
+                    <i class="fa-solid fa-calendar-alt mr-2"></i>Fases do Sol e da Lua
+                </h3>
+                <div id="moon-sun-data" class="grid grid-cols-2 gap-4 text-center">
+                    <div class="p-4 bg-yellow-100 dark:bg-yellow-900 rounded-lg shadow-inner transform hover:scale-[1.02] transition duration-300">
+                        <i class="fa-solid fa-sun text-4xl text-yellow-500 mb-2"></i>
+                        <p class="font-bold text-gray-800 dark:text-gray-100">Nascer do Sol:</p>
+                        <p id="sunrise-time" class="text-sm text-gray-600 dark:text-gray-300">--:--</p>
+                    </div>
+                    <div class="p-4 bg-purple-100 dark:bg-purple-900 rounded-lg shadow-inner transform hover:scale-[1.02] transition duration-300">
+                        <i class="fa-solid fa-moon text-4xl text-purple-500 mb-2"></i>
+                        <p class="font-bold text-gray-800 dark:text-gray-100">Fase da Lua:</p>
+                        <p id="moon-phase" class="text-sm text-gray-600 dark:text-gray-300">--</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="script.js"></script>
+    
+    <footer class="mt-8 p-4 text-center bg-white dark:bg-gray-800 shadow-inner transition-colors duration-500">
+        <p class="text-gray-600 dark:text-gray-400">&copy; 2025 Dashboard de Previsão do Tempo</p>
+    </footer>
 </body>
 </html>
