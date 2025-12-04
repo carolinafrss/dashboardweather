@@ -1,151 +1,103 @@
-/* Pagina CSS de um Dashboard de Previsão do Tempo funcional, com os seguintes requisitos:
-1. Adicionar gráficos para visualizar a oscilação de temperatura e umidade da previsão de 5 dias.
-2. Tem um botão que permite as opções da troca de tema da página (dark e light).
-3. Garanta um layout responsivo para celular e desktop.
-Extra:
-a) Adicionado um botão para que mude a cor da pagina com as cores de acordo com a estação no momento do ano e mostrando a temperatura atual da cidade.
-b) Adicionado um calendario com as fases do Sol e as fases da Lua.
+:root {
+    --glass-bg: rgba(255, 255, 255, 0.7);
+}
 
-Exemplo de APIs que podem ser usadas: 
-https: //public-web.meteosource.com/weather-api-porto-alegre
-https: //open-meteo.com/
-https: //openweathermap.org/api
-*/
 
-/* Pagina CSS de um Dashboard de Previsão do Tempo funcional */
+/* Básico e responsivo */
+* {
+    box-sizing: border-box
+}
 
-/* ARQUIVO CSS - Estilos Personalizados 
-   Complementa o Tailwind CSS utilizado no HTML 
-*/
-
-/* Importação da Fonte 'Outfit' do Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+html,
+body {
+    height: 100%
+}
 
 body {
-    font-family: 'Outfit', sans-serif;
-    /* Transição suave ao trocar de tema (claro/escuro) */
-    transition: background 0.5s ease, color 0.3s ease;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
 }
 
-/* === Efeito Glassmorphism (Vidro Fosco) ===
-   Utilizado nos painéis para dar um visual moderno 
-*/
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem
+}
+
+
+/* Glass panels */
 .glass-panel {
-    /* Fundo semi-transparente */
-    background: rgba(255, 255, 255, 0.6);
-    /* Efeito de desfoque de fundo (Vidro Fosco) */
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    /* Compatibilidade Safari */
-    /* Borda sutil */
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    /* Sombra interna para dar profundidade */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background: var(--glass-bg);
+    backdrop-filter: blur(6px);
 }
 
-/* Estilos para o tema ESCURO (ativados pela classe 'dark' no <body>) */
 .dark .glass-panel {
-    background: rgba(31, 41, 55, 0.7);
-    /* Fundo escuro semi-transparente */
-    border: 1px solid rgba(55, 65, 81, 0.5);
-    /* Borda escura sutil */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+    background: rgba(17, 24, 39, 0.6);
 }
 
-/* === Animações Personalizadas (Para o Ícone do Título) === */
-@keyframes bounce-slow {
+/* dark mode glass */
 
-    0%,
-    100% {
-        transform: translateY(-5%);
-    }
 
-    50% {
-        transform: translateY(0);
-    }
+/* Black & White mode */
+.blackwhite * {
+    filter: grayscale(100%) !important
 }
 
-.animate-bounce-slow {
-    animation: bounce-slow 4s infinite ease-in-out;
-}
 
-/* === Estilos Sazonais (Estações do Ano) ===
-   Classes aplicadas dinamicamente via JS no body.
-   Requisito: Mudar a cor da página de acordo com a estação e a hora do dia.
-*/
-/* Verão (Hemisfério Sul: Dezembro a Fevereiro) */
+/* Seasonal background classes (aplicadas ao body) */
 .season-summer-day {
-    background: linear-gradient(135deg, #2980b9, #6dd5fa, #ffffff);
-    /* Azul claro/branco (Sol) */
+    background: linear-gradient(135deg, #fff7ed, #ffe7a3);
 }
 
+/* quente */
 .season-summer-night {
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-    /* Azul escuro/preto (Noite) */
+    background: linear-gradient(135deg, #091028, #243b55);
 }
 
-/* Outono (Hemisfério Sul: Março a Maio) */
 .season-autumn-day {
-    background: linear-gradient(135deg, #d38312, #a83279);
-    /* Tons quentes/roxo (Entardecer) */
+    background: linear-gradient(135deg, #fff4e6, #ffd8a8);
 }
 
 .season-autumn-night {
-    background: linear-gradient(135deg, #232526, #414345);
-    /* Cinza escuro/preto (Noite) */
+    background: linear-gradient(135deg, #2b1a1a, #4b2c2c);
 }
 
-/* Inverno (Hemisfério Sul: Junho a Agosto) */
 .season-winter-day {
-    background: linear-gradient(135deg, #83a4d4, #b6fbff);
-    /* Azul/Ciano claro (Neve/Frio) */
+    background: linear-gradient(135deg, #e6f0ff, #cfe8ff);
 }
 
 .season-winter-night {
-    background: linear-gradient(135deg, #141e30, #243b55);
-    /* Azul marinho/Escuro (Noite Fria) */
+    background: linear-gradient(135deg, #0f172a, #0b1220);
 }
 
-/* Primavera (Hemisfério Sul: Setembro a Novembro) */
 .season-spring-day {
-    background: linear-gradient(135deg, #56ab2f, #a8e063);
-    /* Verde claro/Amarelo (Flores) */
+    background: linear-gradient(135deg, #f0fff4, #d8f7e2);
 }
 
 .season-spring-night {
-    background: linear-gradient(135deg, #2b5876, #4e4376);
-    /* Roxo/Azul escuro (Noite) */
+    background: linear-gradient(135deg, #122022, #0b2a2a);
 }
 
-/* === Estilização da Barra de Rolagem ===
-   Melhora a estética em navegadores WebKit
-*/
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+
+/* Buttons small polish */
+button {
+    cursor: pointer
 }
 
-::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.1);
+
+/* small utilities */
+.text-center {
+    text-align: center
 }
 
-.dark ::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
+
+/* adjustments for forecast cards */
+#forecast-data .glass-panel {
+    padding: 1rem
 }
 
-::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 4px;
-}
 
-.dark ::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.3);
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.5);
-}
-
-.dark ::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.5);
+/* ensure canvas fills container */
+#weather-chart {
+    width: 100% !important;
+    height: 100% !important
 }

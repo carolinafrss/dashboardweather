@@ -58,6 +58,7 @@ function handleCitySearch() {
 }
 
 // Função para buscar coordenadas (lat/lon) a partir do nome da cidade usando a API Open-Meteo (Geocoding)
+
 async function fetchCoordinates(cityName) {
     try {
         const loadingDiv = document.getElementById('current-weather-data');
@@ -73,8 +74,8 @@ async function fetchCoordinates(cityName) {
         const data = await response.json();
         if (data.results && data.results.length > 0) {
             const result = data.results[0];
-            currentCity = result.name;
-            await fetchWeatherData(result.latitude, result.longitude);
+            currentCity = `${result.name}, ${result.country}`;
+            await fetchWeatherData(result.latitude, result.longitude)
         } else {
             alert(`Cidade "${cityName}" não encontrada. Tente novamente.`);
             loadingDiv.innerHTML = `<p class="text-red-500">Cidade não encontrada. Tente "Rio de Janeiro".</p>`;
@@ -84,7 +85,6 @@ async function fetchCoordinates(cityName) {
         alert("Erro ao buscar a cidade. Verifique o console para detalhes.");
     }
 }
-
 
 /**
  * Busca a previsão pela geolocalização do usuário (Requisito 4)
@@ -117,6 +117,9 @@ function fetchWeatherByGeolocation() {
         alert("Geolocalização não é suportada por este navegador.");
     }
 }
+function fetchWeatherByCity(city) {
+    fetchCoordinates(city);
+}
 
 // --- 3. FUNÇÕES DE CONEXÃO COM A API OPEN-METEO ---
 
@@ -134,11 +137,8 @@ async function fetchWeatherData(latitude, longitude) {
         hourly: "temperature_2m,relative_humidity_2m",
         daily: "weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max,precipitation_sum,wind_speed_10m_max,rain_sum",
         timezone: "auto",
-        forecast_days: 7, // Pega 7 dias para garantir 5 dias de previsão a partir do amanhã
-        models: "gfs_seamless",
-        past_days: 0,
-        start_date: new Date().toISOString().slice(0, 10),
-        end_date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10), // Apenas os próximos 5 dias para o Daily
+        forecast_days: 7,
+        models: "gfs_seamless"
     });
 
     // API para Fase da Lua (Requisito 9)
@@ -147,7 +147,6 @@ async function fetchWeatherData(latitude, longitude) {
         longitude: longitude,
         daily: "moon_phase",
         timezone: "auto",
-        forecast_days: 1, // Só precisamos da fase atual
     });
 
     const weatherUrl = `${API_URL}?${params.toString()}`;
@@ -178,7 +177,11 @@ async function fetchWeatherData(latitude, longitude) {
         renderChart(forecastDataCache.hourly, currentChartMode);
 
         // 4. Renderiza Fases Sol/Lua (Requisito 9)
-        renderMoonAndSun(forecastDataCache.daily.sunrise[0], forecastDataCache.daily.moon_phase[0]);
+        const sunrise = forecastDataCache.daily?.sunrise?.[0] || null;
+        const moon = forecastDataCache.daily?.moon_phase?.[0] || null;
+
+        renderMoonAndSun(sunrise, moon);
+
 
         // 5. Aplica lógica sazonal se o modo estiver ativo (Requisito 8)
         if (document.body.classList.contains('seasonal-mode')) {
@@ -266,20 +269,6 @@ function renderForecast(daily) {
 
     dataDiv.innerHTML = html;
 }
-
-/**
- * Renderiza as informações do Sol e da Lua (Requisito 9)
- * @param {string} sunriseTime - Hora do nascer do sol no formato ISO
- * @param {number} moonPhaseCode - Código da fase da lua (0 a 1)
- */
-function renderMoonAndSun(sunriseTime, moonPhaseCode) {
-    const sunrise = new Date(sunriseTime).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    const moonPhase = getMoonPhase(moonPhaseCode);
-
-    document.getElementById('sunrise-time').textContent = sunrise;
-    document.getElementById('moon-phase').textContent = moonPhase;
-}
-
 // --- 5. FUNÇÕES DE GRÁFICO (Chart.js) ---
 
 /**
@@ -410,6 +399,12 @@ function toggleTheme() {
         btn.classList.replace('hover:bg-yellow-700', 'hover:bg-gray-700');
     }
 }
+
+// Modo Preto e Branco
+document.getElementById("bw-btn").addEventListener("click", () => {
+    document.body.classList.toggle("blackwhite");
+});
+
 
 /**
  * Alterna o modo de tema sazonal (Requisito 8)
@@ -589,3 +584,4 @@ function getMoonPhase(code) {
     if (code === 1) return 'Lua Nova'; // 1 é o mesmo que 0
     return '--';
 }
+
