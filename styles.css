@@ -38,7 +38,7 @@ body {
 
 
 /* Black & White mode */
-.blackwhite * {
+.bw-btn * {
     filter: grayscale(100%) !important
 }
 
